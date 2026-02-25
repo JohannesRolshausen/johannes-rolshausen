@@ -1,0 +1,1 @@
+Minimalistisches, Retro und Neo-Brutalismus, ähnlich wie teenage-engineering.
