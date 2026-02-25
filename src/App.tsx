@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import profileImg from './assets/Johannes Rolshausen.JPG';
+import profileImg from './assets/Johannes-Rolshausen.jpg';
 import './App.css';
 
 function App() {

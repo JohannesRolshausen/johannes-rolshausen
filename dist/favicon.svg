@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Harter schwarzer Rahmen mit grauem Hintergrund -->
+  <rect x="4" y="4" width="56" height="56" fill="#d9d9d9" stroke="#111111" stroke-width="6" />
+  <!-- Orangener "Record" Punkt -->
+  <circle cx="32" cy="32" r="14" fill="#ff3b00" />
+</svg>
