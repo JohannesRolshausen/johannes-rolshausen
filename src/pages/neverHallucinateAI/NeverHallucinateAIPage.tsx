@@ -110,7 +110,7 @@ export default function NeverHallucinateAIPage() {
           <form className="composer" onSubmit={sendMessage}>
             <input
               type="text"
-              placeholder="Send a message to the model..."
+              placeholder="Ask me anything..."
               value={input}
               onChange={(event) => setInput(event.target.value)}
               disabled={isThinking}

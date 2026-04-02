@@ -180,6 +180,10 @@ function App() {
               <span className="link-label">EMAIL</span>
               <span className="link-arrow">↗</span>
             </a>
+            <a href="https://www.imdb.com/de/name/nm18293583/" target="_blank" rel="noopener noreferrer" className="brutal-link">
+              <span className="link-label">IMDB</span>
+              <span className="link-arrow">↗</span>
+            </a>
           </div>
         </div>
       </section>
