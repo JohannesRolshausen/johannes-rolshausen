@@ -9,6 +9,7 @@
   position: relative;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -39,6 +40,113 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.hero-carousel {
+  position: absolute;
+  left: 50%;
+  bottom: 7.5rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(860px, 92vw);
+  margin-top: 0;
+  transform: translateX(-50%) scale(1);
+  transform-origin: center bottom;
+  transition: transform 0.25s ease;
+}
+
+.hero-carousel.is-hovered {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.carousel-window {
+  flex: 1;
+  overflow: hidden;
+  border: 3px solid var(--text-color);
+  background-color: var(--bg-color);
+  box-shadow: 10px 10px 0px var(--accent-color);
+  pointer-events: none;
+}
+
+.carousel-track {
+  display: flex;
+  width: max-content;
+}
+
+.carousel-slide {
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+}
+
+.carousel-item {
+  width: 100%;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: clamp(0.82rem, 1.6vw, 1.1rem);
+  font-weight: 700;
+  color: var(--text-color);
+  background-color: transparent;
+  padding: 0.9rem 1rem;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.carousel-item:hover {
+  background-color: var(--accent-color);
+  color: var(--bg-color);
+  border-color: var(--text-color);
+}
+
+.carousel-item.is-mock {
+  opacity: 0.6;
+}
+
+.carousel-item.is-mock:hover {
+  background-color: transparent;
+  color: var(--text-color);
+  border-color: transparent;
+}
+
+.carousel-arrow {
+  width: 46px;
+  height: 46px;
+  border: 3px solid var(--text-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2px);
+  transition: all 0.2s ease;
+}
+
+.hero-carousel.is-hovered .carousel-arrow {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.hero-carousel.is-hovered .carousel-window {
+  pointer-events: auto;
+}
+
+.carousel-arrow:hover {
+  background-color: var(--accent-color);
+  color: var(--bg-color);
 }
 
 .hero-content h1 {
@@ -273,6 +381,25 @@
 }
 
 @media (max-width: 768px) {
+  .hero-carousel {
+    width: 94vw;
+    bottom: 4rem;
+    gap: 0.5rem;
+  }
+
+  .carousel-slide {
+    min-width: 260px;
+  }
+
+  .carousel-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-window {
+    box-shadow: 6px 6px 0px var(--accent-color);
+  }
+
   .brutal-link {
     padding: 1rem 1.5rem;
   }

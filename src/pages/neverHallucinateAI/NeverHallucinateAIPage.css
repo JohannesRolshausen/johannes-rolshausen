@@ -1,0 +1,326 @@
+.never-hallucinate-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  color: #e7f2ff;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(41, 241, 255, 0.34), transparent 34%),
+    radial-gradient(circle at 80% 20%, rgba(104, 73, 255, 0.42), transparent 40%),
+    radial-gradient(circle at 78% 82%, rgba(255, 166, 72, 0.24), transparent 36%),
+    linear-gradient(145deg, #03061a 0%, #090b2d 48%, #060922 100%);
+}
+
+.never-hallucinate-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 110%);
+}
+
+.glass-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(24px);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  animation: drift 10s ease-in-out infinite alternate;
+}
+
+.orb-a {
+  width: 340px;
+  height: 340px;
+  top: -80px;
+  left: -70px;
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(245, 255, 255, 0.95) 0%,
+    rgba(95, 255, 243, 0.82) 28%,
+    rgba(74, 120, 255, 0.58) 58%,
+    rgba(63, 19, 255, 0) 100%
+  );
+}
+
+.orb-b {
+  width: 380px;
+  height: 380px;
+  right: -120px;
+  top: 8%;
+  animation-duration: 14s;
+  background: radial-gradient(
+    circle at 24% 28%,
+    rgba(74, 255, 243, 0.9) 0%,
+    rgba(77, 150, 255, 0.8) 32%,
+    rgba(113, 71, 255, 0.62) 62%,
+    rgba(113, 71, 255, 0) 100%
+  );
+}
+
+.orb-c {
+  width: 320px;
+  height: 320px;
+  left: 48%;
+  bottom: -150px;
+  animation-duration: 12s;
+  background: radial-gradient(
+    circle at 52% 20%,
+    rgba(255, 236, 130, 0.95) 0%,
+    rgba(255, 164, 86, 0.76) 26%,
+    rgba(130, 118, 255, 0.5) 62%,
+    rgba(130, 118, 255, 0) 100%
+  );
+}
+
+.chat-shell {
+  position: relative;
+  z-index: 2;
+  max-width: 920px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.chat-header,
+.chat-panel {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.08) 46%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 10px 50px rgba(0, 0, 0, 0.35);
+}
+
+.chat-header {
+  display: grid;
+  justify-items: start;
+  padding: 20px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #cce4ff;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.badge {
+  margin-top: 28px;
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  background: rgba(255, 255, 255, 0.08);
+  justify-self: center;
+}
+
+.chat-header h1 {
+  margin-top: 14px;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  text-align: center;
+  justify-self: center;
+}
+
+.chat-header p {
+  margin-top: 10px;
+  color: rgba(230, 242, 255, 0.78);
+  text-align: center;
+  justify-self: center;
+}
+
+.chat-panel {
+  min-height: 64vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+}
+
+.chat-messages {
+  padding: 20px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.chat-bubble {
+  width: min(85%, 560px);
+  border-radius: 18px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(8, 16, 41, 0.56);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: fadeUp 0.4s ease;
+}
+
+.chat-bubble.user {
+  margin-left: auto;
+  background: linear-gradient(140deg, rgba(22, 104, 255, 0.55), rgba(18, 171, 255, 0.36));
+}
+
+.chat-bubble.assistant {
+  margin-right: auto;
+}
+
+.bubble-role {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(219, 238, 255, 0.75);
+  font-family: 'Space Mono', monospace;
+}
+
+.chat-bubble p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.thinking-bubble {
+  display: grid;
+  gap: 10px;
+}
+
+.liquid-loader {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.liquid-loader span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #ffffff, #45dcff);
+  box-shadow: 0 0 16px rgba(81, 220, 255, 0.55);
+  animation: pulseBlob 1s ease-in-out infinite;
+}
+
+.liquid-loader span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.liquid-loader span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(6, 10, 24, 0.35);
+}
+
+.composer input {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ecf6ff;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.composer input::placeholder {
+  color: rgba(236, 246, 255, 0.55);
+}
+
+.composer input:focus {
+  border-color: rgba(80, 228, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(45, 203, 255, 0.18);
+}
+
+.composer button {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #29c8ff 0%, #5e6fff 100%);
+  color: #f8fcff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.composer button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.composer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulseBlob {
+  0%,
+  100% {
+    transform: scale(0.75) translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2) translateY(-2px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(10px, -16px, 0) scale(1.08);
+  }
+}
+
+@media (max-width: 740px) {
+  .never-hallucinate-page {
+    padding: 14px;
+  }
+
+  .chat-header {
+    padding: 16px;
+  }
+
+  .chat-panel {
+    min-height: 72vh;
+  }
+
+  .chat-bubble {
+    width: 100%;
+  }
+}
