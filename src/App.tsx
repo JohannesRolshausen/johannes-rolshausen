@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import profileImg from './assets/Johannes-Rolshausen.jpg';
+import profileImg from './assets/Johannes-Rolshausen.webp';
 import './App.css';
 
 const pages = [
@@ -15,10 +15,13 @@ const CAROUSEL_ITEM_WIDTH = 320;
 const CAROUSEL_SPEED_PX_PER_SECOND = 48;
 
 function App() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isCarouselHovering, setIsCarouselHovering] = useState(false);
-  const [trackOffset, setTrackOffset] = useState(-pages.length * CAROUSEL_ITEM_WIDTH);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const gridOverlayRef = useRef<HTMLDivElement | null>(null);
+  const coordinatesRef = useRef<HTMLDivElement | null>(null);
+  const carouselTrackRef = useRef<HTMLDivElement | null>(null);
+  const trackOffsetRef = useRef(-pages.length * CAROUSEL_ITEM_WIDTH);
 
   const carouselPages = [...pages, ...pages, ...pages];
   const loopDistance = pages.length * CAROUSEL_ITEM_WIDTH;
@@ -37,24 +40,80 @@ function App() {
     return nextOffset;
   };
 
+  const applyTrackOffset = (value: number) => {
+    const normalized = normalizeOffset(value);
+    trackOffsetRef.current = normalized;
+
+    if (carouselTrackRef.current) {
+      carouselTrackRef.current.style.transform = `translate3d(${normalized}px, 0, 0)`;
+    }
+  };
+
   const goToNextSlide = () => {
-    setTrackOffset((prev) => normalizeOffset(prev - CAROUSEL_ITEM_WIDTH));
+    applyTrackOffset(trackOffsetRef.current - CAROUSEL_ITEM_WIDTH);
   };
 
   const goToPrevSlide = () => {
-    setTrackOffset((prev) => normalizeOffset(prev + CAROUSEL_ITEM_WIDTH));
+    applyTrackOffset(trackOffsetRef.current + CAROUSEL_ITEM_WIDTH);
   };
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+    const hero = heroRef.current;
+    const gridOverlay = gridOverlayRef.current;
+
+    if (!hero || !gridOverlay) {
+      return;
+    }
+
+    let animationFrameId = 0;
+    let latestX = 0;
+    let latestY = 0;
+    let hasPendingUpdate = false;
+
+    const flushPointerPosition = () => {
+      animationFrameId = 0;
+
+      if (!hasPendingUpdate) {
+        return;
+      }
+
+      hasPendingUpdate = false;
+      gridOverlay.style.setProperty('--cursor-x', `${latestX}px`);
+      gridOverlay.style.setProperty('--cursor-y', `${latestY}px`);
+
+      if (coordinatesRef.current) {
+        coordinatesRef.current.textContent = `X: ${Math.round(latestX)} Y: ${Math.round(latestY)}`;
+      }
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const rect = hero.getBoundingClientRect();
+      latestX = event.clientX - rect.left;
+      latestY = event.clientY - rect.top;
+      hasPendingUpdate = true;
+
+      if (!animationFrameId) {
+        animationFrameId = window.requestAnimationFrame(flushPointerPosition);
+      }
+    };
+
+    hero.addEventListener('pointermove', handlePointerMove, { passive: true });
+
+    return () => {
+      hero.removeEventListener('pointermove', handlePointerMove);
+
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
   }, []);
 
   useEffect(() => {
     if (isCarouselHovering) {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
@@ -69,7 +128,7 @@ function App() {
       const deltaSeconds = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
 
-      setTrackOffset((prev) => normalizeOffset(prev + CAROUSEL_SPEED_PX_PER_SECOND * deltaSeconds));
+      applyTrackOffset(trackOffsetRef.current + CAROUSEL_SPEED_PX_PER_SECOND * deltaSeconds);
       animationFrameId = window.requestAnimationFrame(animate);
     };
 
@@ -79,28 +138,29 @@ function App() {
   }, [isCarouselHovering]);
 
   useEffect(() => {
-    setTrackOffset(-pages.length * CAROUSEL_ITEM_WIDTH);
+    applyTrackOffset(-pages.length * CAROUSEL_ITEM_WIDTH);
   }, []);
+
+  const handleHeroPointerLeave = () => {
+    setIsHovering(false);
+
+    if (coordinatesRef.current) {
+      coordinatesRef.current.textContent = 'X: -- Y: --';
+    }
+  };
 
   return (
     <div className="app-container">
       <section 
-        className="hero"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
+        ref={heroRef}
+        className={`hero ${isHovering ? 'is-hovering' : ''}`}
+        onPointerEnter={() => setIsHovering(true)}
+        onPointerLeave={handleHeroPointerLeave}
       >
-        <div 
-          className="grid-overlay"
-          style={{
-            maskImage: isHovering ? `radial-gradient(circle 300px at ${mousePos.x}px ${mousePos.y}px, black 0%, transparent 100%)` : 'none',
-            WebkitMaskImage: isHovering ? `radial-gradient(circle 300px at ${mousePos.x}px ${mousePos.y}px, black 0%, transparent 100%)` : 'none',
-            opacity: isHovering ? 1 : 0,
-            transition: 'opacity 0.4s ease'
-          }}
-        />
+        <div className="grid-overlay" ref={gridOverlayRef} />
         
         <div className="tech-details top-left">SYS.01 // READY</div>
-        <div className="tech-details top-right">X: {mousePos.x} Y: {mousePos.y}</div>
+        <div className="tech-details top-right" ref={coordinatesRef}>X: -- Y: --</div>
         <div className="tech-details bottom-left">J.ROLSHAUSEN</div>
         <div className="tech-details bottom-right">V 1.0.0</div>
 
@@ -126,7 +186,7 @@ function App() {
           <div className="carousel-window">
             <div
               className="carousel-track"
-              style={{ transform: `translateX(${trackOffset}px)` }}
+              ref={carouselTrackRef}
             >
               {carouselPages.map((page, index) => (
                 <div className="carousel-slide" key={`${page.name}-${index}`}>
@@ -164,7 +224,13 @@ function App() {
             </p>
           </div>
           <div className="image-container">
-            <img src={profileImg} alt="Johannes Rolshausen" className="profile-image" />
+            <img
+              src={profileImg}
+              alt="Johannes Rolshausen"
+              className="profile-image"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </section>
