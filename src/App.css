@@ -17,23 +17,31 @@
   cursor: crosshair;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .hero {
+    cursor: default;
+  }
+}
+
 .grid-overlay {
   --cursor-x: 50%;
   --cursor-y: 50%;
+  --grid-size: 40px;
+  --grid-mask: radial-gradient(circle 240px at var(--cursor-x) var(--cursor-y), black 0%, transparent 100%);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background-size: 40px 40px;
+  background-size: var(--grid-size) var(--grid-size);
   background-image: 
     linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
   z-index: 1;
   opacity: 0;
-  mask-image: radial-gradient(circle 240px at var(--cursor-x) var(--cursor-y), black 0%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle 240px at var(--cursor-x) var(--cursor-y), black 0%, transparent 100%);
+  mask-image: var(--grid-mask);
+  -webkit-mask-image: var(--grid-mask);
   transition: opacity 0.25s ease;
   will-change: opacity, mask-image, -webkit-mask-image;
   contain: paint;
@@ -251,6 +259,30 @@
   margin-bottom: 1.5rem;
   color: var(--text-color);
   line-height: 1.8;
+}
+
+.about-image-block {
+  width: 100%;
+}
+
+.photo-credit {
+  margin: 1rem 0 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.75;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.photo-credit-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+}
+
+.photo-credit-link:hover {
+  cursor: pointer;
 }
 
 .image-container {

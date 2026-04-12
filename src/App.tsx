@@ -17,6 +17,7 @@ const CAROUSEL_SPEED_PX_PER_SECOND = 48;
 function App() {
   const [isHovering, setIsHovering] = useState(false);
   const [isCarouselHovering, setIsCarouselHovering] = useState(false);
+  const [isTouchHeroAnimating, setIsTouchHeroAnimating] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
   const gridOverlayRef = useRef<HTMLDivElement | null>(null);
   const coordinatesRef = useRef<HTMLDivElement | null>(null);
@@ -109,6 +110,119 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const hero = heroRef.current;
+    const gridOverlay = gridOverlayRef.current;
+
+    if (!hero || !gridOverlay) {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const touchOnlyMediaQuery = window.matchMedia('(hover: none) and (pointer: coarse)');
+
+    if (!touchOnlyMediaQuery.matches) {
+      return;
+    }
+
+    gridOverlay.style.setProperty('--grid-size', '20px');
+
+    type FallingPixel = {
+      x: number;
+      y: number;
+      speed: number;
+      radius: number;
+      drift: number;
+    };
+
+    let animationFrameId = 0;
+    let previousTimestamp = 0;
+    let sceneWidth = 0;
+    let sceneHeight = 0;
+
+    const updateScene = () => {
+      const rect = hero.getBoundingClientRect();
+      sceneWidth = rect.width;
+      sceneHeight = rect.height;
+    };
+
+    const createPixel = (distributeAcrossHeight = false): FallingPixel => ({
+      x: Math.random() * sceneWidth,
+      y: distributeAcrossHeight
+        ? Math.random() * (sceneHeight + 180) - 180
+        : -40 - Math.random() * 180,
+      speed: 90 + Math.random() * 160,
+      radius: 10 + Math.random() * 12,
+      drift: -10 + Math.random() * 20,
+    });
+
+    updateScene();
+
+    if (!sceneWidth || !sceneHeight) {
+      return;
+    }
+
+    const particleCount = Math.max(14, Math.min(24, Math.round(sceneWidth / 22)));
+    const particles = Array.from({ length: particleCount }, () => createPixel(true));
+
+    setIsTouchHeroAnimating(true);
+
+    if (coordinatesRef.current) {
+      coordinatesRef.current.textContent = 'AUTO // FLOW';
+    }
+
+    const animate = (timestamp: number) => {
+      if (!previousTimestamp) {
+        previousTimestamp = timestamp;
+      }
+
+      const deltaSeconds = (timestamp - previousTimestamp) / 1000;
+      previousTimestamp = timestamp;
+
+      const maskLayers = particles.map((particle) => {
+        particle.y += particle.speed * deltaSeconds;
+        particle.x += particle.drift * deltaSeconds;
+
+        if (particle.y - particle.radius > sceneHeight) {
+          Object.assign(particle, createPixel());
+        }
+
+        if (particle.x < -particle.radius) {
+          particle.x = sceneWidth + particle.radius;
+        } else if (particle.x > sceneWidth + particle.radius) {
+          particle.x = -particle.radius;
+        }
+
+        return `radial-gradient(circle ${particle.radius}px at ${particle.x}px ${particle.y}px, black 0%, transparent 100%)`;
+      });
+
+      const maskValue = maskLayers.join(', ');
+      gridOverlay.style.setProperty('--grid-mask', maskValue);
+      animationFrameId = window.requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('resize', updateScene);
+    animationFrameId = window.requestAnimationFrame(animate);
+
+    return () => {
+      setIsTouchHeroAnimating(false);
+      window.removeEventListener('resize', updateScene);
+      gridOverlay.style.removeProperty('--grid-size');
+      gridOverlay.style.removeProperty('--grid-mask');
+
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+
+      if (coordinatesRef.current) {
+        coordinatesRef.current.textContent = 'X: -- Y: --';
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (isCarouselHovering) {
       return;
     }
@@ -153,7 +267,7 @@ function App() {
     <div className="app-container">
       <section 
         ref={heroRef}
-        className={`hero ${isHovering ? 'is-hovering' : ''}`}
+        className={`hero ${isHovering || isTouchHeroAnimating ? 'is-hovering' : ''}`}
         onPointerEnter={() => setIsHovering(true)}
         onPointerLeave={handleHeroPointerLeave}
       >
@@ -223,14 +337,27 @@ function App() {
               This is my digital playground on which I will share random thoughts as well as ideas and digital experiments.
             </p>
           </div>
-          <div className="image-container">
-            <img
-              src={profileImg}
-              alt="Johannes Rolshausen"
-              className="profile-image"
-              loading="lazy"
-              decoding="async"
-            />
+          <div className="about-image-block">
+            <div className="image-container">
+              <img
+                src={profileImg}
+                alt="Johannes Rolshausen"
+                className="profile-image"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <p className="photo-credit">
+              Photo by{' '}
+              <a
+                href="https://maxiwert.myportfolio.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="photo-credit-link"
+              >
+                Max Iwert
+              </a>
+            </p>
           </div>
         </div>
       </section>

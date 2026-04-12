@@ -15,11 +15,21 @@ const IDK_VARIANTS = [
   "I can't tell — I don't know.",
   "Unknown. I don't know.",
   "I don't know yet.",
+  "How about asking Google?",
+  "Counter Question: What is the answer to the ultimate question of life, the universe, and everything?",
+  "Counter Question: Do Androids Dream of Electric Sheep?",
+  "To every question, there is an answer. To every answer, there is a question."
 ];
+
+const EASTER_EGG_YEARS = 7_500_000n;
+const MS_PER_YEAR = 31_557_600_000n; // 365.25 days
+const EASTER_EGG_TARGET_MS = EASTER_EGG_YEARS * MS_PER_YEAR;
 
 export default function NeverHallucinateAIPage() {
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isEasterEggTimerActive, setIsEasterEggTimerActive] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome',
@@ -29,11 +39,16 @@ export default function NeverHallucinateAIPage() {
   ]);
 
   const timeoutRef = useRef<number | null>(null);
+  const easterEggTimerRef = useRef<number | null>(null);
+  const easterEggStartMsRef = useRef<bigint | null>(null);
 
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
+      }
+      if (easterEggTimerRef.current) {
+        window.clearInterval(easterEggTimerRef.current);
       }
     };
   }, []);
@@ -55,7 +70,10 @@ export default function NeverHallucinateAIPage() {
     setIsThinking(true);
 
     timeoutRef.current = window.setTimeout(() => {
-      const variant = IDK_VARIANTS[Math.floor(Math.random() * IDK_VARIANTS.length)];
+      const isWinningPrompt = trimmed === '42';
+      const variant = isWinningPrompt
+        ? 'Interesting, let me calculate wether this is true.'
+        : IDK_VARIANTS[Math.floor(Math.random() * IDK_VARIANTS.length)];
 
       setMessages((prev) => [
         ...prev,
@@ -65,7 +83,42 @@ export default function NeverHallucinateAIPage() {
           text: variant,
         },
       ]);
-      setIsThinking(false);
+      if (!isWinningPrompt) {
+        setIsThinking(false);
+        return;
+      }
+
+      setIsEasterEggTimerActive(true);
+      setElapsedSeconds(0);
+      easterEggStartMsRef.current = BigInt(Date.now());
+
+      easterEggTimerRef.current = window.setInterval(() => {
+        if (!easterEggStartMsRef.current) {
+          return;
+        }
+
+        const elapsedMs = BigInt(Date.now()) - easterEggStartMsRef.current;
+        const elapsedWholeSeconds = Number(elapsedMs / 1000n);
+        setElapsedSeconds(elapsedWholeSeconds);
+
+        if (elapsedMs >= EASTER_EGG_TARGET_MS) {
+          if (easterEggTimerRef.current) {
+            window.clearInterval(easterEggTimerRef.current);
+            easterEggTimerRef.current = null;
+          }
+
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `assistant-${Date.now()}`,
+              role: 'assistant',
+              text: 'Confirmed. 42 is true.',
+            },
+          ]);
+          setIsEasterEggTimerActive(false);
+          setIsThinking(false);
+        }
+      }, 1000);
     }, 1400);
   };
 
@@ -102,7 +155,11 @@ export default function NeverHallucinateAIPage() {
                   <span />
                   <span />
                 </div>
-                <p>Calibrating certainty...</p>
+                <p>
+                  {isEasterEggTimerActive
+                    ? `Calibrating certainty... ${elapsedSeconds.toLocaleString()} seconds elapsed (expected time left: ~7,500,000 years).`
+                    : 'Calibrating certainty...'}
+                </p>
               </article>
             )}
           </div>
