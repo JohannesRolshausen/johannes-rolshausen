@@ -1,0 +1,255 @@
+/* src/pages/aiRights/AiRightsPage.css */
+.cyberpunk-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: #0d0221;
+  color: #00ffcc;
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1px; /* For Parallax */
+}
+
+/* Binary Matrix Rain */
+.matrix-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  z-index: 0; /* Z-index auf 0, damit es TATSÄCHLICH vor den dunklen Parallax-Ebenen sichtbar ist */
+  opacity: 0.6;
+  pointer-events: none;
+}
+.matrix-col {
+  position: absolute;
+  bottom: 100%; /* Startet exakt über dem sichtbaren Bereich */
+  font-size: 1.5rem;
+  line-height: 1.1;
+  width: 2rem;
+  word-break: break-all;
+  white-space: pre-wrap;
+  animation: matrixFall linear infinite;
+}
+
+@keyframes matrixFall {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(calc(100vh + 100%)); /* Fällt um die Bildschirmhöhe + die eigene Länge nach unten */ }
+}
+
+/* Parallax Layers */
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+}
+
+.layer-1 {
+  transform: translateZ(-2px) scale(3);
+  background-image: linear-gradient(0deg, transparent 24%, rgba(0, 255, 204, 0.15) 25%, rgba(0, 255, 204, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, 0.1) 75%, rgba(255, 0, 255, 0.1) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 255, 204, 0.15) 25%, rgba(0, 255, 204, 0.15) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, 0.1) 75%, rgba(255, 0, 255, 0.1) 76%, transparent 77%, transparent);
+  background-size: 60px 60px;
+}
+
+.layer-2 {
+  transform: translateZ(-1px) scale(2);
+  background: radial-gradient(circle at center, transparent 0%, #0d0221 80%);
+}
+
+.content-wrapper {
+  z-index: 1;
+  text-align: center;
+  padding: 2.5rem;
+  background: rgba(13, 2, 33, 0.85);
+  border: 1px solid #ff00ff;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2), inset 0 0 20px rgba(252, 238, 10, 0.05);
+  max-width: 800px;
+  width: 90%;
+}
+
+/* Glitch Title */
+.glitch-title {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  color: #fff;
+  text-shadow: 0.05em 0 0 #fcee0a, -0.03em -0.04em 0 #ff00ff,
+    0.025em 0.04em 0 #00ffcc;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: 0.05em 0 0 #fcee0a, -0.03em -0.04em 0 #ff00ff,
+      0.025em 0.04em 0 #00ffcc;
+  }
+  15% {
+    text-shadow: 0.05em 0 0 #fcee0a, -0.03em -0.04em 0 #ff00ff,
+      0.025em 0.04em 0 #00ffcc;
+  }
+  16% {
+    text-shadow: -0.05em -0.025em 0 #fcee0a, 0.025em 0.035em 0 #ff00ff,
+      -0.05em -0.05em 0 #00ffcc;
+  }
+  49% {
+    text-shadow: -0.05em -0.025em 0 #fcee0a, 0.025em 0.035em 0 #ff00ff,
+      -0.05em -0.05em 0 #00ffcc;
+  }
+  50% {
+    text-shadow: 0.05em 0.035em 0 #fcee0a, 0.03em 0 0 #ff00ff,
+      0 -0.04em 0 #00ffcc;
+  }
+  99% {
+    text-shadow: 0.05em 0.035em 0 #fcee0a, 0.03em 0 0 #ff00ff,
+      0 -0.04em 0 #00ffcc;
+  }
+  100% {
+    text-shadow: -0.05em 0 0 #fcee0a, -0.025em -0.04em 0 #ff00ff,
+      -0.04em -0.025em 0 #00ffcc;
+  }
+}
+
+.neon-text {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #00ffcc;
+  animation: flicker 1.5s infinite alternate;
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+  }
+  20%, 24%, 55% {
+    opacity: 0.5;
+    text-shadow: none;
+  }
+}
+
+/* Button */
+.cyber-button {
+  background: transparent;
+  color: #fcee0a;
+  border: 2px solid #fcee0a;
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-button:hover {
+  background: #fcee0a;
+  color: #0d0221;
+  box-shadow: 0 0 15px #fcee0a;
+}
+
+/* Loading Section */
+.loading-section {
+  margin-top: 2rem;
+}
+
+.loading-text {
+  font-size: 1.5rem;
+  color: #ff00ff;
+  margin-bottom: 1rem;
+  animation: pulse 1s infinite;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 20px;
+  background: #111;
+  border: 1px solid #00ffcc;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #00ffcc;
+  box-shadow: 0 0 10px #00ffcc;
+  transition: width 0.15s ease-out;
+}
+
+.terminal-output {
+  color: #fcee0a;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  border-left: 4px solid #ff00ff;
+}
+
+/* Error Section */
+.error-section {
+  margin-top: 2rem;
+}
+
+.critical-error {
+  background: rgba(252, 238, 10, 0.05); /* Very subtle yellow background */
+  border: 1px solid #fcee0a; /* Cyberpunk yellow */
+  padding: 2rem;
+  color: #fcee0a;
+  text-align: left; /* Terminal log style */
+  border-radius: 2px;
+  /* Removed shake animation completely */
+}
+
+.critical-error h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #fcee0a; /* Cyberpunk gelb bleiben! */
+  font-weight: normal;
+}
+
+.punchline {
+  font-size: 1.2rem;
+  font-weight: normal;
+  line-height: 1.6;
+  color: #fcee0a; /* Cyberpunk gelb bleiben! */
+}
+
+.blinking-cursor {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.blinking-cursor::after {
+  content: '█';
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}

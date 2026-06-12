@@ -6,6 +6,7 @@ import './App.css';
 const pages = [
   { name: 'Sound Canvas', path: '/soundCanvas' },
   { name: 'AI that never hallucinates', path: '/neverHallucinateAI' },
+  { name: 'Why AI deserves rights', path: '/aiRights' },
   //{ name: 'Analog Thoughts', path: undefined },
   //{ name: 'Motion Stories', path: undefined },
   //{ name: 'Playground Lab Notes', path: undefined },
