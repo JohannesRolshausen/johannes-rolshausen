@@ -327,6 +327,19 @@ function App() {
           </button>
         </div>
       </section>
+
+      <section className="showreel-teaser">
+        <div className="teaser-content">
+          <div className="teaser-text">
+            <h2 className="tech-font">Acting // Showreel</h2>
+            <p>Watch my latest performances in an interactive bento experience.</p>
+          </div>
+          <Link to="/showreel" className="brutal-button">
+            Explore Showreel <span className="arrow">→</span>
+          </Link>
+        </div>
+      </section>
+
       <section className="about">
         <div className="about-content">
           <div className="about-text">

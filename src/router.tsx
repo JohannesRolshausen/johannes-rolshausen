@@ -3,6 +3,7 @@ import App from './App';
 import SoundCanvasPage from './pages/soundCanvas/SoundCanvasPage';
 import NeverHallucinateAIPage from './pages/neverHallucinateAI/NeverHallucinateAIPage';
 import AiRightsPage from './pages/aiRights/AiRightsPage';
+import ShowreelPage from './pages/showreel/ShowreelPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,5 +21,9 @@ export const router = createBrowserRouter([
   {
     path: '/aiRights',
     element: <AiRightsPage />,
+  },
+  {
+    path: '/showreel',
+    element: <ShowreelPage />,
   },
 ]);
