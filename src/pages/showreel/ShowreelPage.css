@@ -84,6 +84,11 @@
   grid-row: span 1;
 }
 
+.bento-item.wideFull {
+  grid-column: 1 / -1;
+  grid-row: span 2;
+}
+
 .bento-item.tallV {
   grid-column: span 1;
   grid-row: span 2;
@@ -95,9 +100,9 @@
 }
 
 .bento-item.is-active {
-  transform: scale(1.04);
+  transform: scale(1.1);
   z-index: 10;
-  box-shadow: 12px 12px 0 var(--accent-color);
+  box-shadow: 14px 14px 0 var(--accent-color);
 }
 
 .bento-item.is-dimmed {
@@ -114,7 +119,8 @@
   height: 100%;
 }
 
-.video-container video {
+.video-container video,
+.video-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -134,8 +140,7 @@
   transition: opacity 0.3s ease;
 }
 
-.bento-item.is-active .clip-overlay,
-.bento-item:hover .clip-overlay {
+.bento-item.is-active .clip-overlay {
   opacity: 1;
 }
 

@@ -7,53 +7,47 @@ type ShowreelClip = {
   role?: string;
   src: string;
   poster?: string;
-  span: 'big' | 'wideH' | 'tallV' | 'unit';
+  span: 'big' | 'wideH' | 'wideFull' | 'tallV' | 'unit';
+  noSound?: boolean;
 };
 
 const CLIPS: ShowreelClip[] = [
-  {
-    id: '1',
-    title: 'Lead Role - Action Thriller',
-    role: 'Detective Miller',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    span: 'big',
+    {
+    id: '2',
+    title: 'Two Sides',
+    src: '/Two Sides.mp4',
+    span: 'wideFull',
   },
   {
-    id: '2',
-    title: 'Dramatic Monologue',
-    role: 'The Stranger',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    id: '1',
+    title: 'Fatal',
+    src: '/fatal.mp4',
     span: 'wideH',
+    noSound: true,
   },
   {
     id: '3',
-    title: 'Comedy Sketch',
-    role: 'Office Worker',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    span: 'tallV',
+    title: 'Victim',
+    src: '/victim.mp4',
+    span: 'wideH',
   },
   {
     id: '4',
-    title: 'Commercial Work',
-    role: 'Tech Enthusiast',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-    span: 'unit',
+    title: 'Meisner Technique Scene',
+    src: '/Meisner.PNG',
+    span: 'tallV',
   },
   {
     id: '5',
-    title: 'Short Film - Sci-Fi',
-    role: 'Android 7',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-    span: 'unit',
-  },
-  {
-    id: '6',
-    title: 'Period Drama',
-    role: 'Lord Byron',
-    src: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    span: 'unit',
+    title: 'The Visit',
+    src: '/Besuch.jpg',
+    span: 'wideH',
   },
 ];
+
+function isImageClip(clip: ShowreelClip) {
+  return /\.(png|jpe?g|gif|webp|avif)$/i.test(clip.src);
+}
 
 function SoundIcon({ on }: { on: boolean }) {
   if (on) {
@@ -75,7 +69,7 @@ function SoundIcon({ on }: { on: boolean }) {
 }
 
 export default function ShowreelPage() {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [soundOn, setSoundOn] = useState(false);
   const [activeMobileId, setActiveMobileId] = useState<string | null>(CLIPS[0]?.id ?? null);
   
@@ -102,15 +96,21 @@ export default function ShowreelPage() {
           const id = entry.target.getAttribute('data-id');
           setActiveMobileId(id);
           
-          const video = videoRefs.current.get(id!);
-          if (video) {
-            video.play().catch(() => {}); // Autoplay might be blocked
+          const clip = CLIPS.find((c) => c.id === id);
+          if (clip && !isImageClip(clip)) {
+            const video = videoRefs.current.get(`mobile-${id}`);
+            if (video) {
+              video.play().catch(() => {});
+            }
           }
         } else {
           const id = entry.target.getAttribute('data-id');
-          const video = videoRefs.current.get(id!);
-          if (video) {
-            video.pause();
+          const clip = CLIPS.find((c) => c.id === id);
+          if (clip && !isImageClip(clip)) {
+            const video = videoRefs.current.get(`mobile-${id}`);
+            if (video) {
+              video.pause();
+            }
           }
         }
       });
@@ -122,20 +122,38 @@ export default function ShowreelPage() {
     return () => observer.disconnect();
   }, []);
 
-  const handleMouseEnter = (id: string) => {
-    setHoveredId(id);
-    const video = videoRefs.current.get(id);
-    if (video) {
-      video.currentTime = 0;
-      video.play().catch(() => {});
-    }
-  };
+  const handleItemClick = (clip: ShowreelClip) => {
+    const isActive = activeId === clip.id;
 
-  const handleMouseLeave = (id: string) => {
-    setHoveredId(null);
-    const video = videoRefs.current.get(id);
-    if (video) {
-      video.pause();
+    if (isActive) {
+      setActiveId(null);
+      if (!isImageClip(clip)) {
+        const video = videoRefs.current.get(`desktop-${clip.id}`);
+        if (video) {
+          video.pause();
+        }
+      }
+      return;
+    }
+
+    if (activeId) {
+      const prevClip = CLIPS.find((c) => c.id === activeId);
+      if (prevClip && !isImageClip(prevClip)) {
+        const prevVideo = videoRefs.current.get(`desktop-${activeId}`);
+        if (prevVideo) {
+          prevVideo.pause();
+        }
+      }
+    }
+
+    setActiveId(clip.id);
+
+    if (!isImageClip(clip)) {
+      const video = videoRefs.current.get(`desktop-${clip.id}`);
+      if (video) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }
     }
   };
 
@@ -162,41 +180,57 @@ export default function ShowreelPage() {
         {/* Desktop Bento Grid */}
         <div className="bento-grid desktop-only">
           {CLIPS.map((clip) => {
-            const isActive = hoveredId === clip.id;
-            const isDimmed = hoveredId !== null && !isActive;
+            const isActive = activeId === clip.id;
+            const isDimmed = activeId !== null && !isActive;
+            const isImage = isImageClip(clip);
+            const showSound = !isImage && !clip.noSound;
 
             return (
               <div
                 key={clip.id}
                 className={`bento-item ${clip.span} ${isActive ? 'is-active' : ''} ${isDimmed ? 'is-dimmed' : ''}`}
-                onMouseEnter={() => handleMouseEnter(clip.id)}
-                onMouseLeave={() => handleMouseLeave(clip.id)}
+                onClick={() => handleItemClick(clip)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleItemClick(clip);
+                  }
+                }}
+                aria-pressed={isActive}
               >
                 <div className="video-container">
-                  <video
-                    ref={(el) => {
-                      if (el) videoRefs.current.set(clip.id, el);
-                    }}
-                    src={clip.src}
-                    poster={clip.poster}
-                    muted={!soundOn}
-                    playsInline
-                    loop
-                    preload="metadata"
-                  />
+                  {isImage ? (
+                    <img src={clip.src} alt={clip.title} />
+                  ) : (
+                    <video
+                      ref={(el) => {
+                        if (el) videoRefs.current.set(`desktop-${clip.id}`, el);
+                      }}
+                      src={clip.src}
+                      poster={clip.poster}
+                      muted={!soundOn}
+                      playsInline
+                      loop
+                      preload="auto"
+                    />
+                  )}
                   <div className="clip-overlay">
                     <div className="clip-info">
                       <span className="clip-title">{clip.title}</span>
                       {clip.role && <span className="clip-role">{clip.role}</span>}
                     </div>
-                    <button
-                      type="button"
-                      className={`sound-toggle ${soundOn ? 'is-on' : ''}`}
-                      onClick={toggleSound}
-                      aria-label={soundOn ? 'Mute' : 'Unmute'}
-                    >
-                      <SoundIcon on={soundOn} />
-                    </button>
+                    {showSound && (
+                      <button
+                        type="button"
+                        className={`sound-toggle ${soundOn ? 'is-on' : ''}`}
+                        onClick={toggleSound}
+                        aria-label={soundOn ? 'Mute' : 'Unmute'}
+                      >
+                        <SoundIcon on={soundOn} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -208,41 +242,52 @@ export default function ShowreelPage() {
         <div className="mobile-only carousel-shell">
           <div className="carousel-edge carousel-edge--left" aria-hidden="true" />
           <div className="bento-carousel" ref={carouselRef}>
-            {CLIPS.map((clip) => (
-              <div
-                key={clip.id}
-                data-id={clip.id}
-                className={`bento-item unit ${activeMobileId === clip.id ? 'is-active' : ''}`}
-              >
-                <div className="video-container">
-                  <video
-                    ref={(el) => {
-                      if (el) videoRefs.current.set(clip.id, el);
-                    }}
-                    src={clip.src}
-                    poster={clip.poster}
-                    muted={!soundOn}
-                    playsInline
-                    loop
-                    preload="metadata"
-                  />
-                  <div className="clip-overlay">
-                    <div className="clip-info">
-                      <span className="clip-title">{clip.title}</span>
-                      {clip.role && <span className="clip-role">{clip.role}</span>}
+            {CLIPS.map((clip) => {
+              const isImage = isImageClip(clip);
+              const showSound = !isImage && !clip.noSound;
+
+              return (
+                <div
+                  key={clip.id}
+                  data-id={clip.id}
+                  className={`bento-item unit ${activeMobileId === clip.id ? 'is-active' : ''}`}
+                >
+                  <div className="video-container">
+                    {isImage ? (
+                      <img src={clip.src} alt={clip.title} />
+                    ) : (
+                      <video
+                        ref={(el) => {
+                          if (el) videoRefs.current.set(`mobile-${clip.id}`, el);
+                        }}
+                        src={clip.src}
+                        poster={clip.poster}
+                        muted={!soundOn}
+                        playsInline
+                        loop
+                        preload="auto"
+                      />
+                    )}
+                    <div className="clip-overlay">
+                      <div className="clip-info">
+                        <span className="clip-title">{clip.title}</span>
+                        {clip.role && <span className="clip-role">{clip.role}</span>}
+                      </div>
+                      {showSound && (
+                        <button
+                          type="button"
+                          className={`sound-toggle ${soundOn ? 'is-on' : ''}`}
+                          onClick={toggleSound}
+                          aria-label={soundOn ? 'Mute' : 'Unmute'}
+                        >
+                          <SoundIcon on={soundOn} />
+                        </button>
+                      )}
                     </div>
-                    <button
-                      type="button"
-                      className={`sound-toggle ${soundOn ? 'is-on' : ''}`}
-                      onClick={toggleSound}
-                      aria-label={soundOn ? 'Mute' : 'Unmute'}
-                    >
-                      <SoundIcon on={soundOn} />
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="carousel-edge carousel-edge--right" aria-hidden="true" />
         </div>
