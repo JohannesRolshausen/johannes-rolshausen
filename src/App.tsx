@@ -328,7 +328,7 @@ function App() {
         </div>
       </section>
 
-      <section className="showreel-teaser">
+      {/*<section className="showreel-teaser">
         <div className="teaser-content">
           <div className="teaser-text">
             <h2 className="tech-font">Acting // Showreel</h2>
@@ -338,14 +338,14 @@ function App() {
             Explore Showreel <span className="arrow">→</span>
           </Link>
         </div>
-      </section>
+      </section>*/}
 
       <section className="about">
         <div className="about-content">
           <div className="about-text">
             <h2>About</h2>
             <p>
-              Hi, I'm Johannes. Founder, actor, and computer scientist. If you want to get to know me, scroll down a little and connect!
+              Hi, I'm Johannes. Founder and computer scientist. If you want to get to know me, scroll down a little and connect!
             </p>
             <p>
               This is my digital playground on which I will share random thoughts as well as ideas and digital experiments.
