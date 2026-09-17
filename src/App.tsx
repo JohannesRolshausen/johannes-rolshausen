@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import profileImg from './assets/Johannes-Rolshausen.webp';
+import { aiRiskQuotes, pickRandomQuoteIndex } from './aiRiskQuotes';
 import './App.css';
 
 const pages = [
@@ -14,11 +15,15 @@ const pages = [
 
 const CAROUSEL_ITEM_WIDTH = 320;
 const CAROUSEL_SPEED_PX_PER_SECOND = 48;
+const QUOTE_ROTATION_MS = 14000;
+const QUOTE_FADE_MS = 600;
 
 function App() {
   const [isHovering, setIsHovering] = useState(false);
   const [isCarouselHovering, setIsCarouselHovering] = useState(false);
   const [isTouchHeroAnimating, setIsTouchHeroAnimating] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(() => pickRandomQuoteIndex());
+  const [isQuoteFading, setIsQuoteFading] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
   const gridOverlayRef = useRef<HTMLDivElement | null>(null);
   const coordinatesRef = useRef<HTMLDivElement | null>(null);
@@ -256,6 +261,26 @@ function App() {
     applyTrackOffset(-pages.length * CAROUSEL_ITEM_WIDTH);
   }, []);
 
+  useEffect(() => {
+    let fadeTimeoutId = 0;
+
+    const intervalId = window.setInterval(() => {
+      setIsQuoteFading(true);
+
+      fadeTimeoutId = window.setTimeout(() => {
+        setQuoteIndex((current) => pickRandomQuoteIndex(current));
+        setIsQuoteFading(false);
+      }, QUOTE_FADE_MS);
+    }, QUOTE_ROTATION_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(fadeTimeoutId);
+    };
+  }, []);
+
+  const quote = aiRiskQuotes[quoteIndex];
+
   const handleHeroPointerLeave = () => {
     setIsHovering(false);
 
@@ -279,9 +304,15 @@ function App() {
         <div className="tech-details bottom-left">J.ROLSHAUSEN</div>
         <div className="tech-details bottom-right">V 1.0.0</div>
 
-        <div className="hero-content">
-          <h1 style={{ marginLeft: '4px', marginRight: '4px' }}>Welcome  to  my  playground</h1>
-          <p>By Johannes Rolshausen</p>
+        <div className={`hero-content hero-quote ${isQuoteFading ? 'is-fading' : ''}`}>
+          <h1 className="hero-quote-text">
+            <span aria-hidden="true">“</span>
+            {quote.text}
+            <span aria-hidden="true">”</span>
+          </h1>
+          <p className="hero-quote-author" title={`${quote.role} — ${quote.source}`}>
+            — {quote.author}, {quote.year}
+          </p>
         </div>
 
         <div
@@ -328,7 +359,7 @@ function App() {
         </div>
       </section>
 
-      {/*<section className="showreel-teaser">
+      <section className="showreel-teaser">
         <div className="teaser-content">
           <div className="teaser-text">
             <h2 className="tech-font">Acting // Showreel</h2>
@@ -338,14 +369,14 @@ function App() {
             Explore Showreel <span className="arrow">→</span>
           </Link>
         </div>
-      </section>*/}
+      </section>
 
       <section className="about">
         <div className="about-content">
           <div className="about-text">
             <h2>About</h2>
             <p>
-              Hi, I'm Johannes. Founder and computer scientist. If you want to get to know me, scroll down a little and connect!
+              Hi, I'm Johannes. Founder, actor, and computer scientist. If you want to get to know me, scroll down a little and connect!
             </p>
             <p>
               This is my digital playground on which I will share random thoughts as well as ideas and digital experiments.
