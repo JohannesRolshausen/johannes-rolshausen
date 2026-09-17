@@ -17,6 +17,10 @@ const CAROUSEL_ITEM_WIDTH = 320;
 const CAROUSEL_SPEED_PX_PER_SECOND = 48;
 const QUOTE_ROTATION_MS = 14000;
 const QUOTE_FADE_MS = 600;
+const RIPPLE_INTERVAL_MS = 3000;
+const RIPPLE_DURATION_MS = 2600;
+const RIPPLE_MAX_RADIUS = 280;
+const RIPPLE_SPLASH_PHASE = 0.18;
 
 function App() {
   const [isHovering, setIsHovering] = useState(false);
@@ -143,8 +147,16 @@ function App() {
       drift: number;
     };
 
+    type Ripple = {
+      x: number;
+      y: number;
+      startedAt: number;
+    };
+
     let animationFrameId = 0;
     let previousTimestamp = 0;
+    let lastRippleAt = 0;
+    let ripples: Ripple[] = [];
     let sceneWidth = 0;
     let sceneHeight = 0;
 
@@ -163,6 +175,45 @@ function App() {
       radius: 10 + Math.random() * 12,
       drift: -10 + Math.random() * 20,
     });
+
+    // A drop hits a random spot on the grid: short splash, then an expanding ring
+    // (plus a fainter trailing ring) that fades out while it travels.
+    const spawnRipple = (timestamp: number) => {
+      const margin = Math.min(48, sceneWidth / 4, sceneHeight / 4);
+      ripples.push({
+        x: margin + Math.random() * (sceneWidth - margin * 2),
+        y: margin + Math.random() * (sceneHeight - margin * 2),
+        startedAt: timestamp,
+      });
+      lastRippleAt = timestamp;
+    };
+
+    const rippleMaskLayers = (ripple: Ripple, timestamp: number): string[] => {
+      const progress = (timestamp - ripple.startedAt) / RIPPLE_DURATION_MS;
+      const eased = 1 - (1 - progress) ** 3;
+      const alpha = (1 - progress) ** 1.5;
+      const radius = eased * RIPPLE_MAX_RADIUS;
+      const thickness = 14 + 36 * eased;
+      const at = `at ${ripple.x.toFixed(1)}px ${ripple.y.toFixed(1)}px`;
+      const ring = (r: number, width: number, a: number) =>
+        `radial-gradient(circle ${at}, transparent ${Math.max(0, r - width).toFixed(1)}px, rgba(0,0,0,${a.toFixed(3)}) ${Math.max(0, r - width / 2).toFixed(1)}px, transparent ${(r + width / 2).toFixed(1)}px)`;
+
+      const layers = [ring(radius, thickness, alpha)];
+
+      if (progress > 0.12) {
+        layers.push(ring(radius * 0.62, thickness * 0.7, alpha * 0.45));
+      }
+
+      if (progress < RIPPLE_SPLASH_PHASE) {
+        const splash = progress / RIPPLE_SPLASH_PHASE;
+        const splashRadius = 10 + 34 * splash;
+        layers.push(
+          `radial-gradient(circle ${splashRadius.toFixed(1)}px ${at}, rgba(0,0,0,${(1 - splash).toFixed(3)}) 0%, transparent 100%)`,
+        );
+      }
+
+      return layers;
+    };
 
     updateScene();
 
@@ -187,6 +238,13 @@ function App() {
       const deltaSeconds = (timestamp - previousTimestamp) / 1000;
       previousTimestamp = timestamp;
 
+      if (!lastRippleAt || timestamp - lastRippleAt >= RIPPLE_INTERVAL_MS) {
+        spawnRipple(timestamp);
+      }
+
+      ripples = ripples.filter((ripple) => timestamp - ripple.startedAt < RIPPLE_DURATION_MS);
+      const rippleLayers = ripples.flatMap((ripple) => rippleMaskLayers(ripple, timestamp));
+
       const maskLayers = particles.map((particle) => {
         particle.y += particle.speed * deltaSeconds;
         particle.x += particle.drift * deltaSeconds;
@@ -204,7 +262,7 @@ function App() {
         return `radial-gradient(circle ${particle.radius}px at ${particle.x}px ${particle.y}px, black 0%, transparent 100%)`;
       });
 
-      const maskValue = maskLayers.join(', ');
+      const maskValue = [...rippleLayers, ...maskLayers].join(', ');
       gridOverlay.style.setProperty('--grid-mask', maskValue);
       animationFrameId = window.requestAnimationFrame(animate);
     };
