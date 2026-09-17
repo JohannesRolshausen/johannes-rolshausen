@@ -127,10 +127,8 @@ function App() {
       return;
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
+    // Reduced motion keeps the drops but drops the falling pixels.
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const touchOnlyMediaQuery = window.matchMedia('(hover: none) and (pointer: coarse)');
 
     if (!touchOnlyMediaQuery.matches) {
@@ -221,7 +219,9 @@ function App() {
       return;
     }
 
-    const particleCount = Math.max(14, Math.min(24, Math.round(sceneWidth / 22)));
+    const particleCount = prefersReducedMotion
+      ? 0
+      : Math.max(14, Math.min(24, Math.round(sceneWidth / 22)));
     const particles = Array.from({ length: particleCount }, () => createPixel(true));
 
     setIsTouchHeroAnimating(true);
@@ -262,7 +262,9 @@ function App() {
         return `radial-gradient(circle ${particle.radius}px at ${particle.x}px ${particle.y}px, black 0%, transparent 100%)`;
       });
 
-      const maskValue = [...rippleLayers, ...maskLayers].join(', ');
+      const maskValue =
+        [...rippleLayers, ...maskLayers].join(', ') ||
+        'radial-gradient(circle 0px at 0 0, transparent 0%, transparent 100%)';
       gridOverlay.style.setProperty('--grid-mask', maskValue);
       animationFrameId = window.requestAnimationFrame(animate);
     };
@@ -288,10 +290,6 @@ function App() {
 
   useEffect(() => {
     if (isCarouselHovering) {
-      return;
-    }
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
