@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import profileImg from './assets/Johannes-Rolshausen.webp';
 import { aiRiskQuotes, pickRandomQuoteIndex } from './aiRiskQuotes';
+import PolarisTeaser from './PolarisTeaser';
 import './App.css';
 
 const pages = [
@@ -426,6 +427,8 @@ function App() {
           </Link>
         </div>
       </section>
+
+      <PolarisTeaser />
 
       <section className="about">
         <div className="about-content">

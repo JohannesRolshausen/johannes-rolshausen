@@ -1,0 +1,245 @@
+/* Polaris Labs teaser: same brutal layout as the showreel teaser, but on a
+   night sky. Keep the canvas colors in PolarisTeaser.tsx in sync. */
+.polaris-teaser {
+  --polaris-bg: #04060d;
+  --polaris-blue: #2f6bff;
+  --polaris-sky: #8ab4ff;
+  --polaris-ink: #eef2ff;
+  --polaris-grid: rgba(47, 107, 255, 0.45);
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding: 6rem 2rem;
+  overflow: hidden;
+  color: var(--polaris-ink);
+  background-color: var(--polaris-bg);
+  background-image: radial-gradient(circle at 50% 50%, rgba(47, 107, 255, 0.18) 0%, rgba(47, 107, 255, 0.05) 35%, transparent 65%);
+  border-top: 4px solid var(--text-color);
+  cursor: crosshair;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .polaris-teaser {
+    cursor: default;
+  }
+}
+
+.polaris-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.polaris-grid {
+  --cursor-x: 50%;
+  --cursor-y: 50%;
+  --grid-mask: radial-gradient(circle 220px at var(--cursor-x) var(--cursor-y), black 0%, transparent 100%);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, var(--polaris-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--polaris-grid) 1px, transparent 1px);
+  opacity: 0;
+  mask-image: var(--grid-mask);
+  -webkit-mask-image: var(--grid-mask);
+  transition: opacity 0.25s ease;
+  contain: paint;
+}
+
+.polaris-teaser.is-hovering .polaris-grid {
+  opacity: 1;
+}
+
+.polaris-teaser .tech-details {
+  color: var(--polaris-sky);
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.polaris-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.polaris-teaser .polaris-text h2.tech-font {
+  opacity: 1;
+  color: var(--polaris-ink);
+}
+
+.polaris-title-prefix {
+  opacity: 0.6;
+}
+
+/* A light sweep crosses the name every few seconds. */
+.polaris-title-accent {
+  background-image: linear-gradient(
+    100deg,
+    var(--polaris-ink) 0%,
+    var(--polaris-ink) 42%,
+    var(--polaris-sky) 47%,
+    var(--polaris-blue) 50%,
+    var(--polaris-sky) 53%,
+    var(--polaris-ink) 58%,
+    var(--polaris-ink) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: polaris-shimmer 5s ease-in-out infinite;
+}
+
+.polaris-teaser .polaris-text p {
+  color: var(--polaris-ink);
+  opacity: 0.75;
+}
+
+.polaris-star {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  pointer-events: none;
+}
+
+/* Crosshair ticks with a gap around the star. */
+.polaris-star::before,
+.polaris-star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-image: linear-gradient(to right, var(--polaris-sky) 0 22%, transparent 22% 78%, var(--polaris-sky) 78% 100%);
+  opacity: 0.55;
+}
+
+.polaris-star::before {
+  width: 150%;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.polaris-star::after {
+  width: 150%;
+  height: 1px;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.polaris-star-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--polaris-sky);
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: polaris-spin 24s linear infinite;
+}
+
+.polaris-star-core {
+  width: 46px;
+  height: 46px;
+  fill: var(--polaris-ink);
+  filter: drop-shadow(0 0 4px var(--polaris-sky)) drop-shadow(0 0 16px var(--polaris-blue));
+  animation: polaris-pulse 3.2s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.polaris-star-label {
+  position: absolute;
+  top: -0.2rem;
+  left: calc(100% + 0.2rem);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: var(--polaris-sky);
+  opacity: 0.8;
+}
+
+.polaris-teaser.is-hovering .polaris-star-ring {
+  animation-duration: 6s;
+  opacity: 0.9;
+}
+
+.polaris-teaser .polaris-button {
+  justify-self: end;
+  background-color: var(--polaris-blue);
+  color: var(--polaris-ink);
+  border-color: var(--polaris-ink);
+  box-shadow: 8px 8px 0 var(--polaris-ink);
+}
+
+.polaris-teaser .polaris-button:hover {
+  box-shadow: 10px 10px 0 var(--polaris-ink), 0 0 36px rgba(47, 107, 255, 0.6);
+}
+
+.polaris-teaser .polaris-button:hover .arrow {
+  transform: translate(4px, -4px);
+}
+
+@keyframes polaris-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes polaris-pulse {
+  0%,
+  100% {
+    transform: scale(0.86);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes polaris-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+
+  60%,
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .polaris-teaser {
+    padding: 5rem 1.5rem 6rem;
+  }
+
+  .polaris-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .polaris-star {
+    order: -1;
+  }
+
+  .polaris-teaser .polaris-button {
+    justify-self: center;
+  }
+}
