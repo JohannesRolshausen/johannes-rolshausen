@@ -367,7 +367,8 @@ function App() {
             <span aria-hidden="true">”</span>
           </h1>
           <p className="hero-quote-author" title={`${quote.role} — ${quote.source}`}>
-            — {quote.author}, {quote.year}
+            — {quote.author}
+            {quote.year > 0 ? `, ${quote.year}` : ''}
           </p>
         </div>
 
