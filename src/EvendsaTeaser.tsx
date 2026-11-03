@@ -3,8 +3,9 @@ import './EvendsaTeaser.css';
 
 const EVENDSA_URL = 'https://evendsa.de';
 
-// A crowd mingles across the section until the agent "plans" the event and
-// every guest walks to a seat on a floor plan. Hovering plans it instantly.
+// A crowd mingles across the section until Eva, the evendsa assistant, plans
+// the event and every guest walks to a seat on a floor plan. Hovering plans
+// it instantly.
 const MINGLE_SECONDS = 3.2;
 const PLAN_SECONDS = 1.6;
 const HOLD_SECONDS = 3.8;
@@ -25,14 +26,17 @@ const LINK_DISTANCE = 48;
 const READOUT_UPDATE_MS = 70;
 const METER_SEGMENTS = 16;
 const INK = '#111111';
-const PAPER = '#f4f1ea';
+const PAPER = '#ffffff';
 
-// Tasks tick off in the console as the plan comes together.
+// The same package evendsa puts together: venue, catering and program.
 const TASKS = [
-  { label: 'VENUE', threshold: 0.2 },
+  { label: 'LOCATION', threshold: 0.2 },
   { label: 'CATERING', threshold: 0.5 },
-  { label: 'SEATING', threshold: 1 },
+  { label: 'PROGRAM', threshold: 1 },
 ];
+
+// Every round plans another occasion from the evendsa brief form.
+const OCCASIONS = ['TEAM EVENT', 'SUMMER PARTY', 'KICK-OFF', 'ANNIVERSARY', 'XMAS PARTY'];
 
 type Guest = {
   seatX: number;
@@ -85,6 +89,7 @@ function EvendsaTeaser() {
   const deviceStatusRef = useRef<HTMLSpanElement | null>(null);
   const meterRef = useRef<HTMLDivElement | null>(null);
   const readoutRef = useRef<HTMLDivElement | null>(null);
+  const briefRef = useRef<HTMLDivElement | null>(null);
   const taskRefs = useRef<(HTMLLIElement | null)[]>([]);
   const isHoveringRef = useRef(false);
 
@@ -107,6 +112,7 @@ function EvendsaTeaser() {
     let idleSeconds = 0;
     let holdSeconds = 0;
     let planSeconds = 0;
+    let occasionIndex = Math.floor(Math.random() * OCCASIONS.length);
     let animationFrameId = 0;
     let previousTimestamp = 0;
     let lastReadoutUpdate = 0;
@@ -307,7 +313,7 @@ function EvendsaTeaser() {
       section.dataset.agentState = state;
 
       if (statusRef.current) {
-        statusRef.current.textContent = `AGENT // ${STATUS_LABELS[state]}`;
+        statusRef.current.textContent = `EVA // ${STATUS_LABELS[state]}`;
       }
 
       if (deviceStatusRef.current) {
@@ -322,13 +328,17 @@ function EvendsaTeaser() {
         meterRef.current.style.setProperty('--fill', fill.toString());
       }
 
+      if (briefRef.current) {
+        briefRef.current.textContent = `> ${OCCASIONS[occasionIndex]} · ${total} PAX`;
+      }
+
       if (readoutRef.current) {
         if (state === 'idle') {
           readoutRef.current.textContent = '> AWAITING BRIEF';
         } else if (state === 'reset') {
           readoutRef.current.textContent = '> NEXT EVENT';
         } else {
-          readoutRef.current.textContent = `${state === 'done' ? 'PLANNED IN' : 'T+'} ${planSeconds.toFixed(2)} S`;
+          readoutRef.current.textContent = `${state === 'done' ? 'READY IN' : 'T+'} ${planSeconds.toFixed(2)} S`;
         }
       }
 
@@ -339,10 +349,17 @@ function EvendsaTeaser() {
       });
     };
 
+    const startPlanning = () => {
+      target = 1;
+      holdSeconds = 0;
+      planSeconds = 0;
+      occasionIndex = (occasionIndex + 1) % OCCASIONS.length;
+    };
+
     const step = (deltaSeconds: number) => {
       if (isHoveringRef.current) {
         if (target === 0) {
-          planSeconds = 0;
+          startPlanning();
         }
 
         target = 1;
@@ -358,9 +375,7 @@ function EvendsaTeaser() {
         idleSeconds += deltaSeconds;
 
         if (idleSeconds >= MINGLE_SECONDS) {
-          target = 1;
-          holdSeconds = 0;
-          planSeconds = 0;
+          startPlanning();
         }
       }
 
@@ -498,7 +513,7 @@ function EvendsaTeaser() {
       <div className="evendsa-dots" ref={dotsRef} />
 
       <div className="tech-details top-left" data-floor-obstacle>SYS.03 // EVENDSA</div>
-      <div className="tech-details top-right" ref={statusRef} data-floor-obstacle>AGENT // STANDBY</div>
+      <div className="tech-details top-right" ref={statusRef} data-floor-obstacle>EVA // STANDBY</div>
       <div className="tech-details bottom-left" data-floor-obstacle>
         <span className="evendsa-city">SAARBRÜCKEN </span>49°14′N 6°59′E
       </div>
@@ -512,16 +527,17 @@ function EvendsaTeaser() {
               evendsa<span className="evendsa-cursor" aria-hidden="true" />
             </span>
           </h2>
-          <p>An AI agent for the event industry. It plans whole events in seconds.</p>
+          <p>Corporate events in Saarland, planned in seconds. Eva, our AI assistant, bundles venue, catering and program into one package.</p>
         </div>
 
         <div className="evendsa-device" aria-hidden="true" data-floor-obstacle>
           <div className="evendsa-device-bar">
             <span className="evendsa-led" />
-            <span>AGENT.01</span>
+            <span>EVA.01</span>
             <span className="evendsa-device-status" ref={deviceStatusRef}>STANDBY</span>
           </div>
           <div className="evendsa-screen">
+            <div className="evendsa-brief" ref={briefRef}>&gt; TEAM EVENT</div>
             <ul className="evendsa-tasks">
               {TASKS.map((task, index) => (
                 <li

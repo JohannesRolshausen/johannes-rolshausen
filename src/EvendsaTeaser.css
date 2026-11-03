@@ -1,10 +1,11 @@
-/* evendsa teaser: same brutal layout as the other teasers, on signal orange.
-   Keep the canvas colors in EvendsaTeaser.tsx in sync. */
+/* evendsa teaser: same brutal layout as the other teasers, in the evendsa
+   coral. Keep the canvas colors in EvendsaTeaser.tsx in sync. */
 .evendsa-teaser {
-  --evendsa-orange: var(--accent-color);
+  --evendsa-coral: #f24a5f;
+  --evendsa-berry: #d8295d;
   --evendsa-ink: #111111;
-  --evendsa-paper: #f4f1ea;
-  --evendsa-glow: #ff8a3d;
+  --evendsa-paper: #ffffff;
+  --evendsa-glow: #ff5a60;
   position: relative;
   z-index: 5;
   display: flex;
@@ -12,8 +13,10 @@
   padding: 7rem 2rem;
   overflow: hidden;
   color: var(--evendsa-ink);
-  background-color: var(--evendsa-orange);
-  background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, transparent 70%);
+  background-color: var(--evendsa-coral);
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, transparent 70%),
+    linear-gradient(135deg, var(--evendsa-coral) 0%, var(--evendsa-coral) 45%, var(--evendsa-berry) 100%);
   border-top: 4px solid var(--text-color);
   cursor: crosshair;
 }
@@ -88,7 +91,7 @@
   gap: 0.08em;
   padding: 0 0.25em 0.04em;
   background-color: var(--evendsa-ink);
-  color: var(--evendsa-orange);
+  color: var(--evendsa-coral);
   text-transform: none;
   box-shadow: 4px 4px 0 var(--evendsa-paper);
 }
@@ -147,7 +150,7 @@
   height: 8px;
   border-radius: 50%;
   border: 1px solid var(--evendsa-ink);
-  background-color: var(--evendsa-orange);
+  background-color: var(--evendsa-coral);
   opacity: 0.35;
   animation: evendsa-blink 1.6s steps(1) infinite;
 }
@@ -160,7 +163,7 @@
 .evendsa-teaser[data-agent-state='done'] .evendsa-led {
   opacity: 1;
   animation: none;
-  box-shadow: 0 0 8px var(--evendsa-orange);
+  box-shadow: 0 0 8px var(--evendsa-coral);
 }
 
 .evendsa-screen {
@@ -170,6 +173,16 @@
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
+}
+
+.evendsa-brief {
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.25);
+  color: var(--evendsa-paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .evendsa-tasks {
@@ -214,7 +227,7 @@
   position: relative;
   height: 10px;
   margin-bottom: 0.55rem;
-  color: rgba(244, 241, 234, 0.14);
+  color: rgba(255, 255, 255, 0.14);
   background-image: var(--segment);
   background-size: calc(100% / 16) 100%;
 }
@@ -223,11 +236,11 @@
   content: '';
   position: absolute;
   inset: 0;
-  color: var(--evendsa-orange);
+  color: var(--evendsa-coral);
   background-image: var(--segment);
   background-size: calc(100% / 16) 100%;
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
-  filter: drop-shadow(0 0 3px var(--evendsa-orange));
+  filter: drop-shadow(0 0 3px var(--evendsa-coral));
 }
 
 .evendsa-readout {
