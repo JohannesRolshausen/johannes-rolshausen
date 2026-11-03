@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import profileImg from './assets/Johannes-Rolshausen.webp';
 import { aiRiskQuotes, pickRandomQuoteIndex } from './aiRiskQuotes';
 import PolarisTeaser from './PolarisTeaser';
+import EvendsaTeaser from './EvendsaTeaser';
 import './App.css';
 
 const pages = [
@@ -430,6 +431,8 @@ function App() {
       </section>
 
       <PolarisTeaser />
+
+      <EvendsaTeaser />
 
       <section className="about">
         <div className="about-content">

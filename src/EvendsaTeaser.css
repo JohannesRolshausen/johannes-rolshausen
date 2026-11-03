@@ -1,0 +1,292 @@
+/* evendsa teaser: same brutal layout as the other teasers, on signal orange.
+   Keep the canvas colors in EvendsaTeaser.tsx in sync. */
+.evendsa-teaser {
+  --evendsa-orange: var(--accent-color);
+  --evendsa-ink: #111111;
+  --evendsa-paper: #f4f1ea;
+  --evendsa-glow: #ff8a3d;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding: 7rem 2rem;
+  overflow: hidden;
+  color: var(--evendsa-ink);
+  background-color: var(--evendsa-orange);
+  background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, transparent 70%);
+  border-top: 4px solid var(--text-color);
+  cursor: crosshair;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .evendsa-teaser {
+    cursor: default;
+  }
+}
+
+.evendsa-floor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* A blueprint dot grid shows up around the cursor. */
+.evendsa-dots {
+  --cursor-x: 50%;
+  --cursor-y: 50%;
+  --dots-mask: radial-gradient(circle 200px at var(--cursor-x) var(--cursor-y), black 0%, transparent 100%);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-size: 20px 20px;
+  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.5) 1.2px, transparent 1.7px);
+  opacity: 0;
+  mask-image: var(--dots-mask);
+  -webkit-mask-image: var(--dots-mask);
+  transition: opacity 0.25s ease;
+  contain: paint;
+}
+
+.evendsa-teaser.is-hovering .evendsa-dots {
+  opacity: 1;
+}
+
+.evendsa-teaser .tech-details {
+  color: var(--evendsa-ink);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.evendsa-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.evendsa-teaser .evendsa-text h2.tech-font {
+  opacity: 1;
+  color: var(--evendsa-ink);
+}
+
+.evendsa-title-prefix {
+  opacity: 0.7;
+}
+
+/* The name sits on a black label strip, like a device nameplate. */
+.evendsa-title-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.08em;
+  padding: 0 0.25em 0.04em;
+  background-color: var(--evendsa-ink);
+  color: var(--evendsa-orange);
+  text-transform: none;
+  box-shadow: 4px 4px 0 var(--evendsa-paper);
+}
+
+.evendsa-cursor {
+  display: inline-block;
+  width: 0.45em;
+  height: 0.12em;
+  margin-top: 0.62em;
+  background-color: var(--evendsa-paper);
+  animation: evendsa-blink 1s steps(1) infinite;
+}
+
+.evendsa-teaser .evendsa-text p {
+  color: var(--evendsa-ink);
+  opacity: 0.85;
+  margin-top: 0.9rem;
+}
+
+/* The console reads like a small hardware module with an LCD. */
+.evendsa-device {
+  width: 236px;
+  justify-self: center;
+  padding: 0.7rem;
+  background-color: var(--evendsa-paper);
+  border: 4px solid var(--evendsa-ink);
+  box-shadow: 8px 8px 0 var(--evendsa-ink);
+  font-family: 'Space Mono', monospace;
+  pointer-events: none;
+  transform: rotate(-1.5deg);
+  transition: transform 0.3s ease;
+}
+
+.evendsa-teaser.is-hovering .evendsa-device {
+  transform: rotate(0deg) translate(-2px, -2px);
+}
+
+.evendsa-device-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--evendsa-ink);
+}
+
+.evendsa-device-status {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.evendsa-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--evendsa-ink);
+  background-color: var(--evendsa-orange);
+  opacity: 0.35;
+  animation: evendsa-blink 1.6s steps(1) infinite;
+}
+
+.evendsa-teaser[data-agent-state='planning'] .evendsa-led {
+  opacity: 1;
+  animation-duration: 0.3s;
+}
+
+.evendsa-teaser[data-agent-state='done'] .evendsa-led {
+  opacity: 1;
+  animation: none;
+  box-shadow: 0 0 8px var(--evendsa-orange);
+}
+
+.evendsa-screen {
+  padding: 0.75rem 0.8rem 0.7rem;
+  background-color: var(--evendsa-ink);
+  color: var(--evendsa-paper);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.evendsa-tasks {
+  list-style: none;
+  margin: 0 0 0.7rem;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.evendsa-tasks li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.evendsa-tasks li[data-done='true'] {
+  opacity: 1;
+}
+
+.evendsa-task-leader {
+  flex: 1;
+  border-bottom: 2px dotted currentColor;
+  opacity: 0.4;
+}
+
+.evendsa-task-state::after {
+  content: '--';
+}
+
+.evendsa-tasks li[data-done='true'] .evendsa-task-state::after {
+  content: 'OK';
+  color: var(--evendsa-glow);
+}
+
+/* Sixteen LED segments, lit from the left by --fill. */
+.evendsa-meter {
+  --fill: 0;
+  --segment: linear-gradient(to right, currentColor 0 calc(100% - 3px), transparent calc(100% - 3px));
+  position: relative;
+  height: 10px;
+  margin-bottom: 0.55rem;
+  color: rgba(244, 241, 234, 0.14);
+  background-image: var(--segment);
+  background-size: calc(100% / 16) 100%;
+}
+
+.evendsa-meter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  color: var(--evendsa-orange);
+  background-image: var(--segment);
+  background-size: calc(100% / 16) 100%;
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
+  filter: drop-shadow(0 0 3px var(--evendsa-orange));
+}
+
+.evendsa-readout {
+  min-height: 1.2em;
+  color: var(--evendsa-glow);
+  white-space: nowrap;
+}
+
+.evendsa-teaser .evendsa-button {
+  justify-self: end;
+  background-color: var(--evendsa-ink);
+  color: var(--evendsa-paper);
+  border-color: var(--evendsa-ink);
+  box-shadow: 8px 8px 0 var(--evendsa-paper);
+}
+
+.evendsa-teaser .evendsa-button:hover {
+  box-shadow: 10px 10px 0 var(--evendsa-paper);
+}
+
+.evendsa-teaser .evendsa-button:hover .arrow {
+  transform: translate(4px, -4px);
+}
+
+@keyframes evendsa-blink {
+  0%,
+  100% {
+    visibility: visible;
+  }
+
+  50% {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+  /* The extra bottom padding leaves one row of tables under the button. */
+  .evendsa-teaser {
+    padding: 5.5rem 1.5rem 9.5rem;
+  }
+
+  .evendsa-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .evendsa-device {
+    order: -1;
+  }
+
+  .evendsa-teaser .evendsa-button {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .evendsa-city {
+    display: none;
+  }
+}
